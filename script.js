@@ -1,7 +1,7 @@
 
  document.getElementById("start").addEventListener("click",function(){  
   document.getElementById("start").style.display='none'
-   document.getElementById("road").style.animation='roadanimation 20s linear infinite'
+   document.getElementById("road").style.animation='animate 0.13s linear infinite'
 
 
 setInterval(() => {
@@ -95,14 +95,6 @@ var  mycar_right  = Math.abs(document.getElementById("mycarimg").getBoundingClie
 var  mycar_top    = Math.abs(document.getElementById("mycarimg").getBoundingClientRect().top);
 var  mycar_bottom = Math.abs(document.getElementById("mycarimg").getBoundingClientRect().bomycarimg);
 
-if (
-  mycar_left < ecar1_right &&
-  mycar_right > ecar1_left &&
-  mycar_top < ecar1_bottom &&
-  mycar_bottom > ecar1_top
-) {
-  alert("game");
-}
 
 
 
@@ -115,5 +107,3 @@ if (
 
 
  })
-
-

@@ -1,4 +1,4 @@
-*{
+ *{
   margin: 0;
   padding: 0;
 }
@@ -9,14 +9,37 @@ body{
   display: grid;
   place-items: center;
 }
-#road{
-  background: url(road.png);
-  height: 1200vh;
-width: min(510px, 90vw);
+/* #road{
+  background: url(road.jpg) repeat-y;
+  height: 800vh;
+  width: min(510px, 90vw);
   position: relative;
   top: -80vh;
-  z-index: -9;
+  z-index: -1;
+} */
+
+#road{
+  background: url(road.jpg) repeat-y;
+  
+  height: 1200px;
+  width: 520px;
+  position: relative;
+  top: -80vh;
+  z-index: -1;
+  /* animation: animate 0.1s linear infinite; */
 }
+
+@keyframes animate{
+  0%{
+    background-position-y: 0%;
+  }
+  100%{
+    background-position-y: 110px;
+  }
+}
+
+
+
 #start{
   position: absolute;
   top: 60vh;
@@ -93,7 +116,7 @@ animation: ecar4 2s linear infinite;
   width: 100px;
   height: 100px;
   position: relative;
-  top:80vh;
+  top:15vh;
 }
 @keyframes ecar1{
   0%{
@@ -131,10 +154,16 @@ animation: ecar4 2s linear infinite;
   }
 }
 
+
+
+
 #road,
 #enemycar1,
 #enemycar2,
 #enemycar3,
 #enemycar4{
   animation-play-state: paused;
-}
+} 
+
+
+ 
