@@ -21,13 +21,15 @@ body{
 #road{
   background: url(road.jpg) repeat-y;
   
-  height: 1200px;
-  width: 520px;
+  height: 1200vh;
+  width: min(520px, 90vw);
   position: relative;
   top: -80vh;
   z-index: -1;
-  /* animation: animate 0.1s linear infinite; */
+  animation: animate 0.1s linear infinite;
 }
+
+
 
 @keyframes animate{
   0%{
@@ -116,8 +118,11 @@ animation: ecar4 2s linear infinite;
   width: 100px;
   height: 100px;
   position: relative;
-  top:15vh;
+  top:50vh;
 }
+
+
+
 @keyframes ecar1{
   0%{
     top: -30vh;
