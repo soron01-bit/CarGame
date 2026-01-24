@@ -106,11 +106,13 @@ animation: ecar4 2s linear infinite;
 }
 
 .ecarimg{
-  width: 80px;
+  width: 60px;
+  border: 2px solid red;
 }
 
 .mycarimg{
-  width: 80px;
+  border: 2px solid red;
+  width: 60px;
 }
 #mycar{
   width: 100px;

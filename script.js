@@ -49,7 +49,7 @@ window.addEventListener("keydown", (e) => {
       // move up
       break;
     case "a":
-      l=l-2;
+      l=l-5;
       // move left
       break;
     case "s":
@@ -57,7 +57,7 @@ window.addEventListener("keydown", (e) => {
       // move down
       break;
     case "d":
-      l=l+2;
+      l=l+5;
       // move right
       break;
   }
@@ -97,7 +97,53 @@ var  mycar_bottom = Math.abs(document.getElementById("mycarimg").getBoundingClie
 
 
 
-
+if (
+  (
+    (
+      (ecar1_left < mycar_left && mycar_left < ecar1_right) ||
+      (ecar1_left < mycar_right && mycar_right < ecar1_right)
+    ) &&
+    (
+      (ecar1_top < mycar_top && mycar_top < ecar1_bottom) ||
+      (ecar1_top < mycar_bottom && mycar_bottom < ecar1_bottom)
+    )
+  )
+  ||
+  (
+    (
+      (ecar2_left < mycar_left && mycar_left < ecar2_right) ||
+      (ecar2_left < mycar_right && mycar_right < ecar2_right)
+    ) &&
+    (
+      (ecar2_top < mycar_top && mycar_top < ecar2_bottom) ||
+      (ecar2_top < mycar_bottom && mycar_bottom < ecar2_bottom)
+    )
+  )
+  ||
+  (
+    (
+      (ecar3_left < mycar_left && mycar_left < ecar3_right) ||
+      (ecar3_left < mycar_right && mycar_right < ecar3_right)
+    ) &&
+    (
+      (ecar3_top < mycar_top && mycar_top < ecar3_bottom) ||
+      (ecar3_top < mycar_bottom && mycar_bottom < ecar3_bottom)
+    )
+  )
+  ||
+  (
+    (
+      (ecar4_left < mycar_left && mycar_left < ecar4_right) ||
+      (ecar4_left < mycar_right && mycar_right < ecar4_right)
+    ) &&
+    (
+      (ecar4_top < mycar_top && mycar_top < ecar4_bottom) ||
+      (ecar4_top < mycar_bottom && mycar_bottom < ecar4_bottom)
+    )
+  )
+) {
+  alert("game");
+}
 
 
 
