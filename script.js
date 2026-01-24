@@ -65,10 +65,16 @@ window.addEventListener("keydown", (e) => {
   document.getElementById("mycar").style.top=`${t}vh`
   document.getElementById("mycar").style.left=`${l}vw`
 });
-n=0
+let score=0
+
 setInterval(()=>{
-  document.getElementById("score").innerText=`score : ${n}`
-  n=n+1
+  document.getElementById("score").innerText=`score : ${score}`
+  score=score+1
+
+
+
+
+
 
 var ecar1_left   = Math.abs(document.getElementById("ecarimg1").getBoundingClientRect().left);
 var ecar1_right  = Math.abs(document.getElementById("ecarimg1").getBoundingClientRect().right);
@@ -142,14 +148,14 @@ if (
     )
   )
 ) {
-  alert("game");
+  alert(`Game Over! Your score is ${score -2}`);
+  location.reload();
 }
 
 
 
 
 
-}, 100)
+}, 200)
 
-
- })
+ });
