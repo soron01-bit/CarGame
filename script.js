@@ -37,7 +37,7 @@ document.getElementById("enemycar4").style.animation = "ecar4 4s linear infinite
 
 
 
-let t=15;
+let t=25;
 let l=0
 
 
