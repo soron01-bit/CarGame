@@ -35,36 +35,63 @@ document.getElementById("enemycar3").style.animation = "ecar3 5s linear infinite
 document.getElementById("enemycar4").style.animation = "ecar4 4s linear infinite";
 
 
+// try------------start  
+
+let carLeft = 1;
+let carTop = 25;
+const speed = 10;
 
 
-let t=25;
-let l=0
+const keyMap = {
+  w: "up",
+  arrowup: "up",
+  home: "up",
 
+  s: "down",
+  arrowdown: "down",
+  end: "down",
 
+  a: "left",
+  arrowleft: "left",
+  pageup: "left",
+
+  d: "right",
+  arrowright: "right",
+  pagedown: "right"
+};
 
 window.addEventListener("keydown", (e) => {
-  switch(e.key.toLowerCase()){
-    case "w":
-      t=t-3;
-      // move up
+  const action = keyMap[e.key.toLowerCase()];
+  if (!action) return;
+
+  e.preventDefault(); // VERY IMPORTANT
+
+  switch (action) {
+    case "left":
+      carLeft -= speed+20;
       break;
-    case "a":
-      l=l-5;
-      // move left
+
+    case "right":
+      carLeft += speed+20;
       break;
-    case "s":
-      t=t+3;
-      // move down
+
+    case "up":
+      carTop -= speed;
       break;
-    case "d":
-      l=l+5;
-      // move right
+
+    case "down":
+      carTop += speed;
       break;
   }
 
-  document.getElementById("mycar").style.top=`${t}vh`
-  document.getElementById("mycar").style.left=`${l}vw`
+  mycar.style.left = carLeft + "px";
+  mycar.style.top = carTop + "vh";
 });
+
+
+//try--------End
+
+
 let score=0
 
 setInterval(()=>{
@@ -156,6 +183,5 @@ if (
 
 
 
-}, 200)
-
- });
+}, 200);
+});
