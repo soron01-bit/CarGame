@@ -3,7 +3,7 @@
   padding: 0;
 }
 body{
-  background: url(moja.jpg) no-repeat center;
+  background: url(nautre.jpg) no-repeat center;
   background-size: cover;
   height: 100vh;
   display: grid;
@@ -158,6 +158,49 @@ animation: ecar4 2s linear infinite;
     top: 100vh;
   }
 }
+
+
+/* Mobile control container */
+#mobile-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: none;
+}
+
+/* Row layout */
+.control-row {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Buttons */
+.ctrl-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+#mobile-controls{
+  width: min(520px, 90vw);
+  height: min(800px, 700vh);
+}
+
+
 
 
 
