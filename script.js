@@ -179,9 +179,11 @@ let car = document.getElementById("mycar");
 document.addEventListener("touchstart", function (e) {
 
   let screenWidth = window.innerWidth;
-
+  let screenHeight = window.innerHeight;
   // finger touch position X
   let touchX = e.touches[0].clientX;
+   let touchY = e.touches[0].clientY;
+   
 
   // If touch on left side → move left
   if (touchX < screenWidth / 2) {
@@ -198,9 +200,17 @@ document.addEventListener("touchstart", function (e) {
       car.style.left = carLeft + "px";
     }
   }
-});
 
+});
 //mobile//
+
+let music = document.getElementById("bgMusic");
+
+// First touch এ music start হবে
+document.addEventListener("touchstart", function () {
+  music.play();
+}, { once: true });
+
 
 
 });
