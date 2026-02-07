@@ -168,4 +168,39 @@ document.getElementById("start").addEventListener("click", function () {
       location.reload();
     }
   }, 200);
+
+
+//mobile//
+let car = document.getElementById("mycar");
+
+let carLeft = 130; // starting position
+
+// Touch anywhere on screen
+document.addEventListener("touchstart", function (e) {
+
+  let screenWidth = window.innerWidth;
+
+  // finger touch position X
+  let touchX = e.touches[0].clientX;
+
+  // If touch on left side → move left
+  if (touchX < screenWidth / 2) {
+    if (carLeft > 50) {
+      carLeft -= 30;
+      car.style.left = carLeft + "px";
+    }
+  }
+
+  // If touch on right side → move right
+  else {
+    if (carLeft < 220) {
+      carLeft += 30;
+      car.style.left = carLeft + "px";
+    }
+  }
+});
+
+//mobile//
+
+
 });
