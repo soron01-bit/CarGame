@@ -3,6 +3,7 @@
   padding: 0;
 }
 body{
+  touch-action: manipulation;
   background: url(nautre.jpg) no-repeat center;
   background-size: cover;
   height: 100vh;

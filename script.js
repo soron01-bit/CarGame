@@ -185,7 +185,7 @@ document.addEventListener("touchstart", function (e) {
 
   // If touch on left side → move left
   if (touchX < screenWidth / 2) {
-    if (carLeft > 50) {
+    if (carLeft > -120) {
       carLeft -= 90;
       car.style.left = carLeft + "px";
     }
@@ -193,8 +193,8 @@ document.addEventListener("touchstart", function (e) {
 
   // If touch on right side → move right
   else {
-    if (carLeft < 220) {
-      carLeft += 0;
+    if (carLeft < 200) {
+      carLeft += 90;
       car.style.left = carLeft + "px";
     }
   }
