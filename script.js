@@ -4,6 +4,18 @@ document.getElementById("start").addEventListener("click", function () {
   document.getElementById("road").style.animation = 'animate 0.13s linear infinite'
 
 
+  let music = document.getElementById("bgMusic");
+
+// First touch এ music start হবে
+document.addEventListener("touchstart", function () {
+  music.play();
+}, { once: true });
+
+
+music.volume = 0.1; // 30% sound
+
+
+
   setInterval(() => {
     let num = Math.floor(Math.random() * (210 - 150 + 1) + 150);
     document.getElementById("enemycar1").style.left = `${num}px`;
@@ -179,10 +191,8 @@ let car = document.getElementById("mycar");
 document.addEventListener("touchstart", function (e) {
 
   let screenWidth = window.innerWidth;
-  let screenHeight = window.innerHeight;
   // finger touch position X
   let touchX = e.touches[0].clientX;
-   let touchY = e.touches[0].clientY;
    
 
   // If touch on left side → move left
@@ -204,12 +214,6 @@ document.addEventListener("touchstart", function (e) {
 });
 //mobile//
 
-let music = document.getElementById("bgMusic");
-
-// First touch এ music start হবে
-document.addEventListener("touchstart", function () {
-  music.play();
-}, { once: true });
 
 
 
