@@ -173,7 +173,7 @@ document.getElementById("start").addEventListener("click", function () {
 //mobile//
 let car = document.getElementById("mycar");
 
-let carLeft = 130; // starting position
+ // starting position
 
 // Touch anywhere on screen
 document.addEventListener("touchstart", function (e) {
