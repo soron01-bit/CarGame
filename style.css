@@ -122,6 +122,11 @@ animation: ecar4 2s linear infinite;
   position: relative;
   top:25vh;
 }
+@media screen   {
+   mycar{
+    top:50vh;
+   }
+}
 
 
 
