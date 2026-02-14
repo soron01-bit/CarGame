@@ -122,9 +122,9 @@ animation: ecar4 2s linear infinite;
   position: relative;
   top:25vh;
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 400px) {
   #mycar {
-    top: 50vh;
+    top: 90vmin;
   }
 }
 
