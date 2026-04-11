@@ -264,6 +264,8 @@ document.getElementById("start").addEventListener("click", function () {
   const maxTop = 80;
   let touchTargetX = null;
   let touchTargetY = null;
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
   let touchActive = false;
 
   function updatePlayerPosition() {
@@ -279,13 +281,15 @@ document.getElementById("start").addEventListener("click", function () {
     const roadRect = road.getBoundingClientRect();
     const centerX = roadRect.left + roadRect.width / 2;
     const halfTrack = Math.max(1, roadRect.width / 2 - 32);
-    const touchOffset = touchTargetX - centerX;
+    const adjustedTouchX = touchTargetX - touchOffsetX;
+    const touchOffset = adjustedTouchX - centerX;
     const normalized = Math.max(-1, Math.min(1, touchOffset / halfTrack));
 
     carLeft = Math.round(normalized * maxLeft);
     carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
 
-    const touchVh = (touchTargetY / window.innerHeight) * 100;
+    const adjustedTouchY = touchTargetY - touchOffsetY;
+    const touchVh = (adjustedTouchY / window.innerHeight) * 100;
     carTop = Math.round(Math.max(minTop, Math.min(maxTop, touchVh)));
 
     updatePlayerPosition();
@@ -293,9 +297,20 @@ document.getElementById("start").addEventListener("click", function () {
 
   function onTouchStart(event) {
     if (gameOver || event.touches.length === 0) return;
+    const roadRect = road.getBoundingClientRect();
+    const centerX = roadRect.left + roadRect.width / 2;
+    const halfTrack = Math.max(1, roadRect.width / 2 - 32);
+
     touchActive = true;
     touchTargetX = event.touches[0].clientX;
     touchTargetY = event.touches[0].clientY;
+
+    const carXOnScreen = centerX + (carLeft / maxLeft) * halfTrack;
+    const carYOnScreen = (carTop / 100) * window.innerHeight;
+
+    touchOffsetX = touchTargetX - carXOnScreen;
+    touchOffsetY = touchTargetY - carYOnScreen;
+
     updateTouchSteering();
     event.preventDefault();
   }
@@ -312,6 +327,8 @@ document.getElementById("start").addEventListener("click", function () {
     touchActive = false;
     touchTargetX = null;
     touchTargetY = null;
+    touchOffsetX = 0;
+    touchOffsetY = 0;
   }
 
   document.addEventListener("touchstart", onTouchStart, { passive: false });
