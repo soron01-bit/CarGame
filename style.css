@@ -60,10 +60,32 @@ body{
   position: absolute;
   top: 20px;
   left: 20px;
-  font-size: 2rem;
-  padding: 5px;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  padding: 8px 12px;
   background-color: white;
   border-radius: 20px;
+  z-index: 1200;
+}
+
+#shootBtn{
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1200;
+  font-size: 1rem;
+  font-weight: 700;
+  background-color: #cf1f1f;
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+#shootBtn:active{
+  transform: scale(0.96);
 }
 #enemycar1{
   display: grid;
@@ -174,6 +196,26 @@ animation: ecar4 2s linear infinite;
 #enemycar4{
   animation-play-state: paused;
 } 
+
+.bullet,
+.enemy-bullet{
+  position: fixed;
+  width: 8px;
+  height: 22px;
+  border-radius: 5px;
+  z-index: 1400;
+  pointer-events: none;
+}
+
+.bullet{
+  background: linear-gradient(#fff37b, #ff9500);
+  box-shadow: 0 0 10px rgba(255, 149, 0, 0.9);
+}
+
+.enemy-bullet{
+  background: linear-gradient(#9ff6ff, #00a4ff);
+  box-shadow: 0 0 10px rgba(0, 164, 255, 0.9);
+}
 
 
  
