@@ -3,7 +3,6 @@ document.getElementById("start").addEventListener("click", function () {
   const startButton = document.getElementById("start");
   const road = document.getElementById("road");
   const scoreBox = document.getElementById("score");
-  const shootBtn = document.getElementById("shootBtn");
   const music = document.getElementById("bgMusic");
   const mycar = document.getElementById("mycar");
   const mycarImg = document.getElementById("mycarimg");
@@ -118,6 +117,8 @@ document.getElementById("start").addEventListener("click", function () {
 
   const playerBullets = [];
   const enemyBullets = [];
+  const lifeMaterials = [];
+  let lifeMaterialSpawnTimeout;
 
   function createBullet(x, y, enemyShot) {
     const bullet = document.createElement("div");
@@ -156,6 +157,43 @@ document.getElementById("start").addEventListener("click", function () {
     list.splice(index, 1);
   }
 
+  function getRoadSpawnX() {
+    const roadRect = road.getBoundingClientRect();
+    const minX = Math.floor(roadRect.left + 20);
+    const maxX = Math.floor(roadRect.right - 20);
+    return randomInRange(minX, maxX);
+  }
+
+  function spawnLifeMaterial() {
+    if (gameOver) return;
+
+    const lifeItem = document.createElement("div");
+    lifeItem.className = "life-material";
+
+    const x = getRoadSpawnX();
+    const y = -40;
+    lifeItem.style.left = `${x}px`;
+    lifeItem.style.top = `${y}px`;
+    document.body.appendChild(lifeItem);
+
+    lifeMaterials.push({ element: lifeItem, x, y, speed: 7 + speedMultiplier });
+  }
+
+  function queueLifeMaterialSpawn() {
+    if (gameOver) return;
+
+    const delay = randomInRange(3000, 4000);
+    lifeMaterialSpawnTimeout = setTimeout(() => {
+      spawnLifeMaterial();
+      queueLifeMaterialSpawn();
+    }, delay);
+  }
+
+  function removeLifeMaterial(index) {
+    lifeMaterials[index].element.remove();
+    lifeMaterials.splice(index, 1);
+  }
+
   let carLeft = 1;
   let carTop = 25;
   const speed = 10;
@@ -180,6 +218,12 @@ document.getElementById("start").addEventListener("click", function () {
     clearInterval(gameplayTimer);
     clearInterval(speedIncreaseTimer);
     clearInterval(enemyFireTimer);
+    clearInterval(playerAutoFireTimer);
+    clearTimeout(lifeMaterialSpawnTimeout);
+
+    for (let i = lifeMaterials.length - 1; i >= 0; i -= 1) {
+      lifeMaterials[i].element.remove();
+    }
 
     alert(`Game Over! Your score: ${score}`);
     location.reload();
@@ -197,18 +241,8 @@ document.getElementById("start").addEventListener("click", function () {
     pageup: "left",
     d: "right",
     arrowright: "right",
-    pagedown: "right",
-    " ": "shoot"
+    pagedown: "right"
   };
-
-  let lastPlayerShotAt = 0;
-  function tryShoot() {
-    const now = Date.now();
-    const shootCooldown = Math.max(150, 320 - speedMultiplier * 25);
-    if (now - lastPlayerShotAt < shootCooldown) return;
-    lastPlayerShotAt = now;
-    firePlayerBullet();
-  }
 
   window.addEventListener("keydown", (e) => {
     if (gameOver) return;
@@ -232,9 +266,6 @@ document.getElementById("start").addEventListener("click", function () {
       case "down":
         carTop += speed;
         break;
-      case "shoot":
-        tryShoot();
-        break;
     }
 
     carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
@@ -242,16 +273,9 @@ document.getElementById("start").addEventListener("click", function () {
     updatePlayerPosition();
   });
 
-  shootBtn.addEventListener("click", tryShoot);
-
   const mobileStep = 90;
   document.addEventListener("touchstart", function (e) {
     if (gameOver) return;
-
-    if (e.target.id === "shootBtn") {
-      e.preventDefault();
-      return;
-    }
 
     const screenWidth = window.innerWidth;
     const touchX = e.touches[0].clientX;
@@ -266,8 +290,14 @@ document.getElementById("start").addEventListener("click", function () {
     updatePlayerPosition();
   });
 
+  const playerAutoFireTimer = setInterval(() => {
+    if (gameOver) return;
+    firePlayerBullet();
+  }, 220);
+
   applyDynamicSpeed();
   updateScoreUI();
+  queueLifeMaterialSpawn();
 
   const speedIncreaseTimer = setInterval(() => {
     speedMultiplier += 0.2;
@@ -342,6 +372,28 @@ document.getElementById("start").addEventListener("click", function () {
         applyDamageToPlayer(1);
       }
     }
+
+    for (let i = lifeMaterials.length - 1; i >= 0; i -= 1) {
+      const lifeItem = lifeMaterials[i];
+      lifeItem.y += lifeItem.speed;
+      lifeItem.element.style.top = `${lifeItem.y}px`;
+
+      if (lifeItem.y > window.innerHeight + 50) {
+        removeLifeMaterial(i);
+        continue;
+      }
+
+      const lifeRect = lifeItem.element.getBoundingClientRect();
+      if (isColliding(lifeRect, mycarRect)) {
+        playerLife = maxPlayerLife;
+        score += 15;
+        if (score > liveBest) {
+          liveBest = score;
+        }
+        updateScoreUI();
+        removeLifeMaterial(i);
+      }
+    }
   }, 40);
 
   const enemyFireTimer = setInterval(() => {
@@ -349,10 +401,7 @@ document.getElementById("start").addEventListener("click", function () {
 
     const shooters = enemyCars.filter((enemy) => enemy.alive);
     shooters.forEach((enemy) => {
-      const chance = Math.min(0.45, 0.12 + speedMultiplier * 0.03);
-      if (Math.random() < chance) {
-        fireEnemyBullet(enemy);
-      }
+      fireEnemyBullet(enemy);
     });
-  }, 700);
+  }, 650);
 });
