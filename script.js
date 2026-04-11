@@ -3,8 +3,6 @@ document.getElementById("start").addEventListener("click", function () {
   const startButton = document.getElementById("start");
   const road = document.getElementById("road");
   const scoreBox = document.getElementById("score");
-  const steerLeftButton = document.getElementById("steerLeft");
-  const steerRightButton = document.getElementById("steerRight");
   const music = document.getElementById("bgMusic");
   const mycar = document.getElementById("mycar");
   const mycarImg = document.getElementById("mycarimg");
@@ -258,63 +256,68 @@ document.getElementById("start").addEventListener("click", function () {
   }
 
   let carLeft = 1;
-  let carTop = 25;
+  let carTop = 66;
   const speed = 10;
   const minLeft = -220;
   const maxLeft = 220;
   const minTop = 5;
   const maxTop = 80;
-  let steerInterval = null;
+  let touchTargetX = null;
+  let touchTargetY = null;
+  let touchActive = false;
 
   function updatePlayerPosition() {
     mycar.style.left = `${carLeft}px`;
     mycar.style.top = `${carTop}vh`;
   }
 
-  function moveCarLeft() {
-    carLeft -= speed + 20;
+  updatePlayerPosition();
+
+  function updateTouchSteering() {
+    if (!touchActive || touchTargetX === null || touchTargetY === null) return;
+
+    const roadRect = road.getBoundingClientRect();
+    const centerX = roadRect.left + roadRect.width / 2;
+    const halfTrack = Math.max(1, roadRect.width / 2 - 32);
+    const touchOffset = touchTargetX - centerX;
+    const normalized = Math.max(-1, Math.min(1, touchOffset / halfTrack));
+
+    carLeft = Math.round(normalized * maxLeft);
     carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
+
+    const touchVh = (touchTargetY / window.innerHeight) * 100;
+    carTop = Math.round(Math.max(minTop, Math.min(maxTop, touchVh)));
+
     updatePlayerPosition();
   }
 
-  function moveCarRight() {
-    carLeft += speed + 20;
-    carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
-    updatePlayerPosition();
+  function onTouchStart(event) {
+    if (gameOver || event.touches.length === 0) return;
+    touchActive = true;
+    touchTargetX = event.touches[0].clientX;
+    touchTargetY = event.touches[0].clientY;
+    updateTouchSteering();
+    event.preventDefault();
   }
 
-  function startSteering(direction) {
-    if (gameOver) return;
-
-    stopSteering();
-
-    const step = direction === "left" ? moveCarLeft : moveCarRight;
-    step();
-    steerInterval = setInterval(step, 65);
+  function onTouchMove(event) {
+    if (gameOver || event.touches.length === 0) return;
+    touchTargetX = event.touches[0].clientX;
+    touchTargetY = event.touches[0].clientY;
+    updateTouchSteering();
+    event.preventDefault();
   }
 
-  function stopSteering() {
-    if (steerInterval) {
-      clearInterval(steerInterval);
-      steerInterval = null;
-    }
+  function onTouchEnd() {
+    touchActive = false;
+    touchTargetX = null;
+    touchTargetY = null;
   }
 
-  function bindSteeringButton(button, direction) {
-    if (!button) return;
-
-    button.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      startSteering(direction);
-    });
-
-    button.addEventListener("pointerup", stopSteering);
-    button.addEventListener("pointercancel", stopSteering);
-    button.addEventListener("pointerleave", stopSteering);
-  }
-
-  bindSteeringButton(steerLeftButton, "left");
-  bindSteeringButton(steerRightButton, "right");
+  document.addEventListener("touchstart", onTouchStart, { passive: false });
+  document.addEventListener("touchmove", onTouchMove, { passive: false });
+  document.addEventListener("touchend", onTouchEnd, { passive: true });
+  document.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
   function endGame() {
     if (gameOver) return;
@@ -328,7 +331,6 @@ document.getElementById("start").addEventListener("click", function () {
     clearInterval(speedIncreaseTimer);
     clearInterval(enemyFireTimer);
     clearInterval(playerAutoFireTimer);
-    stopSteering();
     clearTimeout(lifeMaterialSpawnTimeout);
 
     for (let i = lifeMaterials.length - 1; i >= 0; i -= 1) {
