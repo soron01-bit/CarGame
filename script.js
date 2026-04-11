@@ -3,9 +3,13 @@ document.getElementById("start").addEventListener("click", function () {
   const startButton = document.getElementById("start");
   const road = document.getElementById("road");
   const scoreBox = document.getElementById("score");
+  const steerLeftButton = document.getElementById("steerLeft");
+  const steerRightButton = document.getElementById("steerRight");
   const music = document.getElementById("bgMusic");
   const mycar = document.getElementById("mycar");
   const mycarImg = document.getElementById("mycarimg");
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const audioContext = AudioContextClass ? new AudioContextClass() : null;
 
   startButton.style.display = "none";
 
@@ -14,6 +18,61 @@ document.getElementById("start").addEventListener("click", function () {
   }, { once: true });
 
   music.volume = 0.1;
+
+  function playBulletSound(isPlayerShot) {
+    if (!audioContext) return;
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = isPlayerShot ? "square" : "triangle";
+    oscillator.frequency.value = isPlayerShot ? 880 : 520;
+
+    gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.09);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+  }
+
+  function playBlastSound() {
+    if (!audioContext) return;
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const blastOscillator = audioContext.createOscillator();
+    const blastGain = audioContext.createGain();
+    const blastFilter = audioContext.createBiquadFilter();
+
+    blastOscillator.type = "sawtooth";
+    blastOscillator.frequency.setValueAtTime(180, audioContext.currentTime);
+    blastOscillator.frequency.exponentialRampToValueAtTime(70, audioContext.currentTime + 0.18);
+
+    blastFilter.type = "lowpass";
+    blastFilter.frequency.setValueAtTime(900, audioContext.currentTime);
+    blastFilter.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.18);
+
+    blastGain.gain.setValueAtTime(0.001, audioContext.currentTime);
+    blastGain.gain.exponentialRampToValueAtTime(0.18, audioContext.currentTime + 0.01);
+    blastGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+
+    blastOscillator.connect(blastFilter);
+    blastFilter.connect(blastGain);
+    blastGain.connect(audioContext.destination);
+
+    blastOscillator.start();
+    blastOscillator.stop(audioContext.currentTime + 0.22);
+  }
 
   const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
@@ -136,6 +195,8 @@ document.getElementById("start").addEventListener("click", function () {
     const bulletX = playerRect.left + playerRect.width / 2 - 4;
     const bulletY = playerRect.top - 12;
 
+    playBulletSound(true);
+
     const bulletElement = createBullet(bulletX, bulletY, false);
     playerBullets.push({ element: bulletElement, x: bulletX, y: bulletY, speed: 20 + speedMultiplier * 2 });
   }
@@ -146,6 +207,8 @@ document.getElementById("start").addEventListener("click", function () {
     const enemyRect = document.getElementById(enemy.imgId).getBoundingClientRect();
     const bulletX = enemyRect.left + enemyRect.width / 2 - 4;
     const bulletY = enemyRect.bottom + 4;
+
+    playBulletSound(false);
 
     const bulletElement = createBullet(bulletX, bulletY, true);
     enemyBullets.push({ element: bulletElement, x: bulletX, y: bulletY, speed: 13 + speedMultiplier * 1.5 });
@@ -201,11 +264,57 @@ document.getElementById("start").addEventListener("click", function () {
   const maxLeft = 220;
   const minTop = 5;
   const maxTop = 80;
+  let steerInterval = null;
 
   function updatePlayerPosition() {
     mycar.style.left = `${carLeft}px`;
     mycar.style.top = `${carTop}vh`;
   }
+
+  function moveCarLeft() {
+    carLeft -= speed + 20;
+    carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
+    updatePlayerPosition();
+  }
+
+  function moveCarRight() {
+    carLeft += speed + 20;
+    carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
+    updatePlayerPosition();
+  }
+
+  function startSteering(direction) {
+    if (gameOver) return;
+
+    stopSteering();
+
+    const step = direction === "left" ? moveCarLeft : moveCarRight;
+    step();
+    steerInterval = setInterval(step, 65);
+  }
+
+  function stopSteering() {
+    if (steerInterval) {
+      clearInterval(steerInterval);
+      steerInterval = null;
+    }
+  }
+
+  function bindSteeringButton(button, direction) {
+    if (!button) return;
+
+    button.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      startSteering(direction);
+    });
+
+    button.addEventListener("pointerup", stopSteering);
+    button.addEventListener("pointercancel", stopSteering);
+    button.addEventListener("pointerleave", stopSteering);
+  }
+
+  bindSteeringButton(steerLeftButton, "left");
+  bindSteeringButton(steerRightButton, "right");
 
   function endGame() {
     if (gameOver) return;
@@ -219,6 +328,7 @@ document.getElementById("start").addEventListener("click", function () {
     clearInterval(speedIncreaseTimer);
     clearInterval(enemyFireTimer);
     clearInterval(playerAutoFireTimer);
+    stopSteering();
     clearTimeout(lifeMaterialSpawnTimeout);
 
     for (let i = lifeMaterials.length - 1; i >= 0; i -= 1) {
@@ -270,23 +380,6 @@ document.getElementById("start").addEventListener("click", function () {
 
     carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
     carTop = Math.max(minTop, Math.min(maxTop, carTop));
-    updatePlayerPosition();
-  });
-
-  const mobileStep = 90;
-  document.addEventListener("touchstart", function (e) {
-    if (gameOver) return;
-
-    const screenWidth = window.innerWidth;
-    const touchX = e.touches[0].clientX;
-
-    if (touchX < screenWidth / 2) {
-      carLeft -= mobileStep;
-    } else {
-      carLeft += mobileStep;
-    }
-
-    carLeft = Math.max(minLeft, Math.min(maxLeft, carLeft));
     updatePlayerPosition();
   });
 
@@ -344,6 +437,7 @@ document.getElementById("start").addEventListener("click", function () {
       });
 
       if (target) {
+        playBlastSound();
         target.hp = Math.max(0, target.hp - 1);
         score += 8;
         removeBullet(playerBullets, i);
