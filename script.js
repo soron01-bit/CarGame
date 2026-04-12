@@ -15,7 +15,7 @@ document.getElementById("start").addEventListener("click", function () {
     music.play();
   }, { once: true });
 
-  music.volume = 0.1;
+  music.volume = 0.5;
 
   function playBulletSound(isPlayerShot) {
     if (!audioContext) return;
